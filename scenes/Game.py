@@ -1,11 +1,12 @@
 import pygame
 
-from graphics.Scene import Scene
+from scenes.Scene import Scene
 
-class Menu(Scene):
+class Game(Scene):
 
-    def __init__(self, screen):
-        pass
+    def __init__(self, process):
+        
+        self.__process = process
 
     def handle_events(self):
 
@@ -15,6 +16,12 @@ class Menu(Scene):
 
             elif event.type == KEYDOWN:
                 self.on_press(event.key)
+
+    def render(self):
+
+        self.screen.blit(pygame.image.load("asssets/sprite_sheet.jpg"),(0,0))
+        pygame.display.flip()
+
 
     def on_press(self, keyEvent):
 

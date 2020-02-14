@@ -19,6 +19,7 @@ class Process:
 
         self.menu = Menu(self)
         self.game = Game(self)
+        self.soundVolume = 100
         self.currentScene = self.menu
 #        self.player = self.game.add_player("player")
 
@@ -40,6 +41,10 @@ class Process:
     def quit(self):
 
         self.running = False
+
+    def change_scene(self, scene):
+
+        self.currentScene = scene
 
         
 if __name__ == '__main__':

@@ -2,6 +2,9 @@ import pygame
 
 from scenes.Scene import Scene
 
+# TODO:
+# 1) In-game menu
+
 MENU_START_X = 200
 MENU_START_Y = 400
 MENU_Y_STEP = 50
@@ -14,25 +17,38 @@ LOAD_GAME = 1
 OPTIONS = 2
 EXIT = 3
 
-CAMPAIGN = 0
-ARENA = 1
-BACK = 2
+SAVE_GAME = 4
+CONTINUE = 5
+
+SOUND = 6
+VIDEO = 7
+
+CAMPAIGN = 8
+ARENA = 9
+BACK = 10
 
 MAIN_SECTION = 0
 NEW_GAME_SECTION = 1
+OPTIONS_SECTION = 2
+INGAME_SECTION = 3
 
 items = [[NEW_GAME, LOAD_GAME, OPTIONS, EXIT],
-         [CAMPAIGN, ARENA, BACK]]
+         [CAMPAIGN, ARENA, BACK],
+         [SOUND, VIDEO, BACK],
+         [CONTINUE, SAVE_GAME, LOAD_GAME, OPTIONS, EXIT]]
 captions = [['New game', 'Load game', 'Options', 'Exit'],
-            ['Campaign', 'Arena', 'Back']]
+            ['Campaign', 'Arena', 'Back'],
+            ['Sound', 'Video', 'Back'],
+            ['Continue', 'Save game', 'Load game', 'Options', 'Exit']]
 
 class Menu:
 
     def __init__(self, process):
         
         self.__process = process
-        self.currentItem = NEW_GAME
+        self.currentItemNumber = 0
         self.currentSection = MAIN_SECTION
+        self.ingameMode = False
 
         pygame.font.init()
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
@@ -40,39 +56,86 @@ class Menu:
     def change_section(self, section):
 
         self.currentSection = section
-        self.currentItem = 0
+        self.currentItemNumber = 0
+
+    def get_current_item(self):
+
+        return items[self.currentSection][self.currentItemNumber]
 
     def move_item_down(self):
+
+        maxItemNumber = len(items[self.currentSection]) - 1
         
-        if self.currentItem < len(items[self.currentSection]) - 1:
-            self.currentItem += 1;
+        if self.currentItemNumber < maxItemNumber:
+            self.currentItemNumber += 1;
+        elif self.currentItemNumber == maxItemNumber:
+            self.currentItemNumber = 0
 
     def move_item_up(self):
 
-        if self.currentItem > 0:
-            self.currentItem -= 1;
+        maxItemNumber = len(items[self.currentSection]) - 1
+
+        if self.currentItemNumber > 0:
+            self.currentItemNumber -= 1;
+        elif self.currentItemNumber == 0:
+            self.currentItemNumber = maxItemNumber
 
     def on_click(self):
 
+        currentItem = self.get_current_item()
+
+        if self.ingameMode:
+            self.__process.game.render()
+        
         if self.currentSection == MAIN_SECTION:
-            if self.currentItem == NEW_GAME:
+            if currentItem == NEW_GAME:
                 self.change_section(NEW_GAME_SECTION)
-            elif self.currentItem == LOAD_GAME:
+            elif currentItem == SAVE_GAME:
                 pass
-            elif self.currentItem == OPTIONS:
+            elif currentItem == LOAD_GAME:
                 pass
-            elif self.currentItem == EXIT:
+            elif currentItem == OPTIONS:
+                self.change_section(OPTIONS_SECTION)
+            elif currentItem == EXIT:
                 self.__process.quit()
 
         elif self.currentSection == NEW_GAME_SECTION:
-            if self.currentItem == CAMPAIGN:
-                self.__process.game.init(0)
-                self.__process.currentScene = self.__process.game
-            elif self.currentItem == ARENA:
-                self.__process.game.init(1)
-                self.__process.currentScene = self.__process.game
-            elif self.currentItem == BACK:
+            if currentItem == CAMPAIGN:
+                #self.__process.game.init(0)
+                self.__process.change_scene(self.__process.game)
+                self.ingameMode = True
+                self.change_section(INGAME_SECTION)
+            elif currentItem == ARENA:
+                #self.__process.game.init(1)
+                self.__process.change_scene(self.__process.game)
+                self.ingameMode = True
+                self.change_section(INGAME_SECTION)
+            elif currentItem == BACK:
                 self.change_section(MAIN_SECTION)
+
+        elif self.currentSection == OPTIONS_SECTION:
+            if currentItem == SOUND:
+                pass
+            elif currentItem == VIDEO:
+                pass
+            elif currentItem == BACK:
+                if not self.ingameMode:
+                    self.change_section(MAIN_SECTION)
+                else:
+                    self.change_section(INGAME_SECTION)
+
+        elif self.currentSection == INGAME_SECTION:
+            if currentItem == CONTINUE:
+                self.__process.change_scene(self.__process.game)
+            elif currentItem == SAVE_GAME:
+                pass
+            elif currentItem == LOAD_GAME:
+                pass
+            elif currentItem == OPTIONS:
+                self.change_section(OPTIONS_SECTION)
+            elif currentItem == EXIT:
+                self.__process.quit()
+                
 
     def on_event(self, event):
         
@@ -83,6 +146,11 @@ class Menu:
                 self.move_item_up()
             elif event.key == pygame.K_RETURN:
                 self.on_click()
+            elif event.key == pygame.K_ESCAPE:
+                if self.ingameMode:
+                    self.__process.change_scene(self.__process.game)
+                else:
+                    self.__process.quit()
 
     def render_text(self):
 
@@ -91,28 +159,19 @@ class Menu:
         
         for caption in captions[self.currentSection]:
             
-            if self.currentItem == item:
+            if self.currentItemNumber == item:
                 text = self.font.render(caption, False, SELECTED_ITEM_COLOR)
             else:
                 text = self.font.render(caption, False, ITEM_COLOR)
             self.__process.screen.blit(text, (MENU_START_X, y))
-            
+
             item += 1
             y += MENU_Y_STEP
 
     def render(self):
 
-        self.__process.screen.blit(pygame.image.load("assets/title.jpg"),(0,0))     
+        if not self.ingameMode:
+            self.__process.screen.blit(pygame.image.load("assets/title.jpg"),(0,0))     
+
         self.render_text()
         pygame.display.flip()
-
-
-    def on_press(self, keyEvent):
-
-#        if self.__state == "menu":
-#            if event.key == pygame.K_DOWN:
-#                self.menu.
-#            if event.key == pygame.K_UP:    
-                
-#        elif self.__state == "game":
-            pass

@@ -37,6 +37,7 @@ class Process:
         while self.running:
             self.handle_events()
             self.currentScene.render()
+            self.logic.update()
 
     def quit(self):
 

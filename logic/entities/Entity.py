@@ -1,4 +1,4 @@
-from logic.PixelVector import PixelVector
+from logic.vectors import PixelVector
 
 class Entity:
 
@@ -9,6 +9,10 @@ class Entity:
         self.__status = "standing"
         self.__direction = direction
 
+    def update(self):
+
+        pass
+
     def get_position(self):
 
         return self.__posPixel
@@ -16,6 +20,14 @@ class Entity:
     def set_position(self, posPixel):
 
         self.__posPixel = posPixel
+
+    def get_direction(self):
+
+        return self.__direction
+
+    def set_direction(self, direction):
+
+        self.__direction = direction
 
     def move(self, radius=1): # TODO: dir as radians
 
@@ -31,6 +43,10 @@ class Entity:
     def set_action(self, status):
 
         self.__status = status
+
+    def get_action(self):
+
+        return self.__status
 
     def get_speed(self):
 

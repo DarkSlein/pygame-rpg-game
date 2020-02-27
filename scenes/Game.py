@@ -18,7 +18,10 @@ class Game(Scene):
         self.__process.logic.create_map(480, 640)
         self.map = self.__process.logic.map
         self.tiles = pygame.image.load("assets/tiles.png").convert()
-        self.playerTiles = pygame.image.load("assets/player.png").convert_alpha()
+        self.charactersTiles = {
+            "player": pygame.image.load("assets/player.png").convert_alpha(),
+            "player2": pygame.image.load("assets/player2.png").convert_alpha()
+            }
 #        self.objects = [
 #            GameObject(0,0,walkable=True,shootable=True), # 0 - grass
 #            GameObject(0,1,walkable=False,shootable=False), # 1 - stone
@@ -109,19 +112,10 @@ class Game(Scene):
 
         for identificator, entity in self.map.entities.items():
 
-            sprite = self.playerTiles.subsurface(0*64,2*64,64,64)
+            if identificator == PLAYER_NAME:
+                sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
+            elif identificator == "npc_test":
+                sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
             pos = entity.get_position()
             self.__process.screen.blit(sprite,(pos.x - self.camera.x,
                                                pos.y - self.camera.y))
-
-        pass
-
-    def on_press(self, keyEvent):
-
-#        if self.__state == "menu":
-#            if event.key == pygame.K_DOWN:
-#                self.menu.
-#            if event.key == pygame.K_UP:    
-                
-#        elif self.__state == "game":
-            pass

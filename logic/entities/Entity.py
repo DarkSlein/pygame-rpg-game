@@ -8,6 +8,7 @@ class Entity:
         self.__speed = speed
         self.__status = "standing"
         self.__direction = direction
+        self.__gotObstacle = False
 
     def update(self):
 
@@ -51,3 +52,11 @@ class Entity:
     def get_speed(self):
 
         return self.__speed
+
+    def set_got_obstacle(self, value):
+
+        self.__gotObstacle = value
+
+    def get_got_obstacle(self):
+
+        return self.__gotObstacle

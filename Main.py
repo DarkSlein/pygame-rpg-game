@@ -21,7 +21,7 @@ class Process:
         self.game = Game(self)
         self.soundVolume = 100
         self.currentScene = self.menu
-#        self.player = self.game.add_player("player")
+#        self.player = self.logic.add_player("player")
 
     def handle_events(self):
 

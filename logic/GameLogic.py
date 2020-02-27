@@ -1,7 +1,9 @@
 import time
 
 from logic.Map import Map
+from logic.AI import AI
 from logic.entities.Player import Player
+from logic.entities.Npc import Npc
 from logic.objects.GameObject import GameObject
 from logic.vectors import SquareVector, PixelVector
 
@@ -13,6 +15,7 @@ class GameLogic:
         def __init__(self):
 
                 self.map = False
+                self.active = True # TODO: when pause then active is False
                 self.objects = [
                     GameObject(0,0,walkable=True,shootable=True), # 0 - grass
                     GameObject(0,1,walkable=False,shootable=False), # 1 - stone
@@ -46,10 +49,12 @@ class GameLogic:
                     GameObject(2,4,walkable=True,shootable=True)
                     ]
                 self.__state = "game"
+                self.__ai = AI(self)
 
         def create_map(self, x=32, y=32):
 
                 self.map = Map(x, y)
+                self.add_entity("npc_test", Npc(PixelVector(400, 500), speed=0.1))
 
         def load_map(self):
 
@@ -99,7 +104,7 @@ class GameLogic:
                 posSquare1 = posPixel.to_square()
                 
                 posPixel.x += 26
-                posPixel.y += 26
+                posPixel.y += 36
                 posSquare2 = posPixel.to_square()
                 
                 objNum1 = self.map.grid[posSquare1.y][posSquare1.x]
@@ -136,11 +141,19 @@ class GameLogic:
         def update(self):
 
                 for identificator, entity in self.map.entities.items():
+                        
                         entity.update()
+                        
+                        if type(entity) is Npc:
+                                self.__ai.control(entity)
+                                
                         if entity.get_action() == "walking":
                                 pos = self.__get_next_position(entity)
                                 if not self.is_obstacle(pos):
                                         self.move_entity(entity, 5)
+                                        entity.set_got_obstacle(False)
+                                else:
+                                        entity.set_got_obstacle(True)
                            
 
                 self.map.update()

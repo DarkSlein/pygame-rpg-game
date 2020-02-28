@@ -2,4 +2,10 @@ import pygame
 
 class Scene:
 
-    pass
+    def __init__(self, process):
+
+        pass
+
+    def update(self):
+
+        pass

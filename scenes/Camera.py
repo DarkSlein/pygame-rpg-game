@@ -10,7 +10,7 @@ class Camera:
 
     def update(self,time):
 
-        playerPos = self.scene.player.get_position()
+        playerPos = self.scene.get_player_position()
 
         if playerPos.x - self.x < 1:
             self.x = playerPos.x - 500

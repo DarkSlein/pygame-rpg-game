@@ -2,9 +2,6 @@ import pygame
 
 from scenes.Scene import Scene
 
-# TODO:
-# 1) In-game menu
-
 MENU_START_X = 200
 MENU_START_Y = 400
 MENU_Y_STEP = 50
@@ -27,21 +24,23 @@ CAMPAIGN = 8
 ARENA = 9
 BACK = 10
 
+MULTIPLAYER = 11
+
 MAIN_SECTION = 0
 NEW_GAME_SECTION = 1
 OPTIONS_SECTION = 2
 INGAME_SECTION = 3
 
-items = [[NEW_GAME, LOAD_GAME, OPTIONS, EXIT],
+items = [[NEW_GAME, LOAD_GAME, MULTIPLAYER, OPTIONS, EXIT],
          [CAMPAIGN, ARENA, BACK],
          [SOUND, VIDEO, BACK],
          [CONTINUE, SAVE_GAME, LOAD_GAME, OPTIONS, EXIT]]
-captions = [['New game', 'Load game', 'Options', 'Exit'],
+captions = [['New game', 'Load game', 'Multiplayer', 'Options', 'Exit'],
             ['Campaign', 'Arena', 'Back'],
             ['Sound', 'Video', 'Back'],
             ['Continue', 'Save game', 'Load game', 'Options', 'Exit']]
 
-class Menu:
+class Menu(Scene):
 
     def __init__(self, process):
         
@@ -80,6 +79,16 @@ class Menu:
         elif self.currentItemNumber == 0:
             self.currentItemNumber = maxItemNumber
 
+    def __init_game_scene(self, gameType, sceneType):
+        
+        if gameType == "singleplayer":
+            self.__process.init_logic()
+
+        self.__process.init_game(gameType)
+        self.__process.change_scene(self.__process.game)
+        self.ingameMode = True
+        self.change_section(INGAME_SECTION)
+
     def on_click(self):
 
         currentItem = self.get_current_item()
@@ -98,18 +107,14 @@ class Menu:
                 self.change_section(OPTIONS_SECTION)
             elif currentItem == EXIT:
                 self.__process.quit()
+            elif currentItem == MULTIPLAYER:
+                self.__init_game_scene("multiplayer", "arena")
 
         elif self.currentSection == NEW_GAME_SECTION:
             if currentItem == CAMPAIGN:
-                #self.__process.game.init(0)
-                self.__process.change_scene(self.__process.game)
-                self.ingameMode = True
-                self.change_section(INGAME_SECTION)
+                self.__init_game_scene("singleplayer", "campaign")
             elif currentItem == ARENA:
-                #self.__process.game.init(1)
-                self.__process.change_scene(self.__process.game)
-                self.ingameMode = True
-                self.change_section(INGAME_SECTION)
+                self.__init_game_scene("singleplayer", "arena")
             elif currentItem == BACK:
                 self.change_section(MAIN_SECTION)
 
@@ -175,3 +180,7 @@ class Menu:
 
         self.render_text()
         pygame.display.flip()
+
+    def update(self):
+
+        self.render()

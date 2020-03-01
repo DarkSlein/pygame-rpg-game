@@ -52,14 +52,15 @@ class Server:
 
 class ClientHandler(threading.Thread):
 
-    def __init__(self, socket, address, identificator, server):
+    def __init__(self, socket, address, clientId, server):
 
         threading.Thread.__init__(self)
         self.socket = socket
         self.address = address
-        self.id = identificator
+        self.clientId = clientId
         self.server = server
         self.signal = True
+        self.playerId = -1
 
     def run(self):
 
@@ -76,16 +77,19 @@ class ClientHandler(threading.Thread):
 
             if data != "" and data.decode("utf-8") != "":
                 if data.decode("utf-8") != "info":
-                    print("ID " + str(self.id) + ": " + str(data.decode("utf-8")))
+                    print("ID " + str(self.clientId) + ": " + str(data.decode("utf-8")))
                 self.__on_command(data.decode("utf-8"))
 
     def __on_command(self, command):
 
+        if self.playerId == -1: # TODO: exception
+            return
+
         if command == "walking" or command == "standing":
-            #self.server.players[self.id].status = command
+            self.__logic.get_entity(self.playerId).set_action(command)
         elif command == "right" or command == "left" or \
         command == "down" or command == "up":
-            #self.server.players[self.id].direction = command
+            self.__logic.get_entity(self.playerId).set_direction(command)
         elif command == "info":
             self.__send_info()
         elif command == "connect":
@@ -98,25 +102,27 @@ class ClientHandler(threading.Thread):
 
     def __send_info(self):
 
-        for entityId, entity in self.__logic.map.entities:
+        for entityId, entity in enumerate(self.__logic.map.entities):
 
             entityPos = entity.get_position()
             messageDict = {"type": "info",
                            "entity_id": entityId,
                            "x": entityPos.x,
-                           "y": entityPos.y}
+                           "y": entityPos.y,
+                           "status": entity.get_action(),
+                           "direction": entity.get_direction()}
             self.__send(messageDict)
 
     def __create_player(self):
 
-        self.__process.logic.add_player(PLAYER_NAME, PixelVector(100,100))
+        self.playerId = self.__process.logic.add_player(PixelVector(100,100))
 
-        self.__send_player_id(playerId)
+        self.__send_player_id()
 
-    def __send_player_id(self, playerId):
+    def __send_player_id(self):
 
         messageDict = {"type": "connect",
-                       "id": playerId}
+                       "player_id": self.playerId}
         self.__send(messageDict)
 
 if __name__ == '__main__':

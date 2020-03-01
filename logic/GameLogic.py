@@ -75,12 +75,12 @@ class GameLogic:
                 
                 return self.map.get_entity(entityId)
 
-        def get_object(posSquare):
+        def get_object(self, posSquare):
 
 #                if not self.map: # map isn't loaded
 #                        return False
 
-                return self.map.get_object(posSquare)
+                return self.objects[self.map.get_object_id(posSquare)]
 
         def add_entity(self, entity):
 

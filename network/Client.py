@@ -2,6 +2,8 @@ import socket
 import threading
 import json
 
+from logic.Map import Map
+
 INFO_TIMEOUT = 10000
 
 class Client:
@@ -12,7 +14,10 @@ class Client:
         self.__sendInfoMessages = False # если True, то отправляет info-сообщения
         self.__infoIterator = 0 # итератор для таймаута между info-запросами
 
-        self.__id = -1 # значение присваивается, когда приходит connect-сообщение
+        self.__playerId = -1 # значение присваивается, когда приходит connect-сообщение
+        self.__entities = {}
+
+        self.__map = Map(32, 32)
 
         try:
             self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,7 +29,6 @@ class Client:
         self.__receiveThread = threading.Thread(target = self.__receive)
         self.__receiveThread.start()
 
-        # send "connect" to server
         self.send("connect")
 
     def update(self):
@@ -35,9 +39,13 @@ class Client:
 
         self.__socket.sendall(str.encode(message))
 
-    def get_id(self):
+    def get_player_id(self):
 
-        return self.__id
+        return self.__playerId
+
+    def get_entity(self, entityId):
+
+        return self.__entities[entityId]
 
     def __send_info_query(self):
 
@@ -62,15 +70,15 @@ class Client:
                 break
 
             print(data.decode("utf-8"))
+            
             messageDict = json.loads(data.decode("utf-8").split("}")[0] + "}")
-
             messageType = messageDict["type"]
             
             if messageType == "connect":
-                self.__id = messageDict["id"]
+                self.__playerId = messageDict["player_id"]
+                self.__sendInfoMessages = True
             elif messageType == "info":
-                pass
-                
-            #print(str(entityDict["id"]) + " " + str(entityDict["x"]) + " " +
-            #      str(entityDict["y"]) + " " + entityDict["status"] + " " +
-            #      entityDict["direction"])
+                self.entities[entityId] = {"x": messageDict["x"],
+                                           "y": messageDict["y"],
+                                           "status": messageDict["status"],
+                                           "direction": messageDict["direction"]}

@@ -45,9 +45,9 @@ class Map:
 
         return self.entities[entityId]
 
-    def get_object(self, posSquare): # TODO: exception throwing
+    def get_object_id(self, posSquare): # TODO: exception throwing
 
-        return self.__objects[self.grid[posSquare.x][posSquare.y]];
+        return self.grid[posSquare.x][posSquare.y]
 
 #    def move_entity(self, identificator, direction, radius):
 

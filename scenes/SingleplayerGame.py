@@ -69,7 +69,7 @@ class SingleplayerGame(Scene):
         for i in range(start_row, start_row + 11):
             for j in range(start_col, start_col + 14):
                 if j < 20 and i < 20:
-                    obj = self.__process.logic.objects[self.map.grid[i][j]]
+                    obj = self.__process.logic.get_object(SquareVector(i, j))
                     sprite = self.tiles.subsurface(obj.j*64,obj.i*64,64,64)
                     self.__process.screen.blit(sprite,(j*64 - self.camera.x,
                                                        i*64 - self.camera.y))

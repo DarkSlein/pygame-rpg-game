@@ -4,7 +4,8 @@ import json
 
 from logic.vectors import SquareVector, PixelVector
 
-INFO_TIMEOUT = 5
+INFO_TIMEOUT = 1 #5
+END_OF_MESSAGE = "|"
 
 class Client:
 
@@ -35,7 +36,7 @@ class Client:
 
     def send(self, message):
 
-        self.__socket.sendall(str.encode(message))
+        self.__socket.sendall(str.encode(message + END_OF_MESSAGE))
 
     def get_player_id(self):
 

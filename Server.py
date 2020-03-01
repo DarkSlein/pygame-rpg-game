@@ -9,6 +9,7 @@ from logic.entities.Character import Character
 from logic.vectors import SquareVector, PixelVector
 
 LOOP_DELAY = 1/240 #1/60
+END_OF_MESSAGE = "|"
 
 class Server:
 
@@ -84,9 +85,17 @@ class ClientHandler(threading.Thread):
                 break
 
             if data != "" and data.decode("utf-8") != "":
-#                if data.decode("utf-8") != "info":
-#                    print("ID " + str(self.clientId) + ": " + str(data.decode("utf-8")))
-                self.__on_command(data.decode("utf-8"))
+
+                dataSplited = data.decode("utf-8").split(END_OF_MESSAGE)
+
+                for message in dataSplited:
+
+                    if message != "":
+
+#                        if message != "info": 
+#                            print("ID " + str(self.clientId) + ": " +
+#                                  str(message))
+                        self.__on_command(message)
 
     def __on_command(self, command):
 

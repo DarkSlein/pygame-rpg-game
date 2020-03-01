@@ -4,10 +4,11 @@ from logic.entities.Entity import Entity
 class Character(Entity):
 
     def __init__(self, posPixel=PixelVector(0, 0), speed=1, direction="right",
-                 maxHealth=30, health=30):
+                 name="tester", maxHealth=30, health=30):
         
         Entity.__init__(self, posPixel, speed, direction)
 
+        self.__name = name
         self.__health = health
         self.__maxHealth = maxHealth
 
@@ -25,3 +26,7 @@ class Character(Entity):
 
         #if self.__health <= 0: dead
         return True
+
+    def get_name(self):
+
+        return self.__name

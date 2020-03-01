@@ -34,16 +34,16 @@ class Map:
             [3 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,23,24,24,24,24,24,24,24],
             [3 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1],
         ]
-        self.entities = {}
+        self.entities = []
         self.__objects = [Background]
 
 #    def is_obstacle(self, posSquare):
         
 #        return self.grid[posSquare.x][posSquare.y].walkable
 
-    def get_entity(self, identificator):
+    def get_entity(self, entityId):
 
-        return self.entities[identificator]
+        return self.entities[entityId]
 
     def get_object(self, posSquare): # TODO: exception throwing
 
@@ -51,9 +51,9 @@ class Map:
 
 #    def move_entity(self, identificator, direction, radius):
 
-    def set_entity_position(self, identificator, posPixel):
+    def set_entity_position(self, entityId, posPixel):
 
-        entity = get_entity(self, identificator)
+        entity = get_entity(self, entityId)
         
         if entity.get_position().x > self.__weight:
             entity.set_position(self.__weight, entity.get_position().y)
@@ -66,9 +66,9 @@ class Map:
 
         return entity.set_position(posPixel)
 
-    def move_entity(self, entity, radius): # TODO: do something
+    def move_entity(self, entityId, radius): # TODO: do something
 
-        #entity = self.get_entity(self, identificator)
+        entity = self.get_entity(entityId)
         
         if entity.get_position().to_square().x > self.__weight:
             return entity.set_position(
@@ -89,19 +89,21 @@ class Map:
 
         return self.grid[posSquare.x][posSquare.y] is not 0
 
-    def entity_exists(self, identificator):
+    #def entity_exists(self, identificator):
 
-        return identificator in self.entities
+        #return identificator in self.entities
 
     def add_object(self, posSquare, objType): # TODO: exception throwing
 
         self.grid[posSquare.x][posSquare.y] = objType
 
 
-    def add_entity(self, identificator, entity):
+    def add_entity(self, entity): # TODO: exception throwing
 
-        self.entities[identificator] = entity
-        return entity
+        entityId = len(self.entities)
+        self.entities.append(entity)
+
+        return entityId
 
     def load(self, array):
 

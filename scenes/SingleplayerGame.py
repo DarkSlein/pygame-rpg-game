@@ -21,8 +21,8 @@ class SingleplayerGame(Scene):
             "player": pygame.image.load("assets/player.png").convert_alpha(),
             "player2": pygame.image.load("assets/player2.png").convert_alpha()
             }
-        self.player = self.__process.logic.add_player(PLAYER_NAME,
-                                                      PixelVector(100,100))
+        self.playerId = self.__process.logic.add_player(PixelVector(100,100),
+                                                        name=PLAYER_NAME)
 
 
     def on_event(self, event):
@@ -31,25 +31,21 @@ class SingleplayerGame(Scene):
             if event.key == pygame.K_ESCAPE:
                 self.__process.change_scene(self.__process.menu)
             elif event.key == pygame.K_DOWN:
-                self.player.set_direction("down")
-                self.player.set_action("walking")
-#                self.camera.y += 10
+                self.__get_player().set_direction("down")
+                self.__get_player().set_action("walking")
             elif event.key == pygame.K_UP:
-                self.player.set_direction("up")
-                self.player.set_action("walking")
-#                self.camera.y -= 10
+                self.__get_player().set_direction("up")
+                self.__get_player().set_action("walking")
             elif event.key == pygame.K_RIGHT:
-                self.player.set_direction("right")
-                self.player.set_action("walking")
-#                self.camera.x += 10
+                self.__get_player().set_direction("right")
+                self.__get_player().set_action("walking")
             elif event.key == pygame.K_LEFT:
-                self.player.set_direction("left")
-                self.player.set_action("walking")
-#                self.camera.x -= 10
+                self.__get_player().set_direction("left")
+                self.__get_player().set_action("walking")
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN or event.key == pygame.K_UP \
                or event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                self.player.set_action("standing")
+                self.__get_player().set_action("standing")
 
     def update(self):
 
@@ -80,18 +76,20 @@ class SingleplayerGame(Scene):
 
     def render_sprites(self):
 
-#        self.player.update()
+        for entityId, entity in enumerate(self.map.entities):
 
-        for identificator, entity in self.map.entities.items():
-
-            if identificator == PLAYER_NAME:
+            if entity.get_name() == PLAYER_NAME:
                 sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
-            elif identificator == "npc_test":
+            elif entity.get_name() == "npc_test":
                 sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
             pos = entity.get_position()
             self.__process.screen.blit(sprite,(pos.x - self.camera.x,
                                                pos.y - self.camera.y))
 
-    def get_player_position(self):
+    def __get_player(self):
 
-        return self.player.get_position()
+        return self.__process.logic.get_entity(self.playerId)
+
+    def get_player_position(self): # for camera, universal method for single and multi
+
+        return self.__get_player().get_position()

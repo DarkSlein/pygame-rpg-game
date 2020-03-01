@@ -54,7 +54,8 @@ class GameLogic:
         def create_map(self, x=32, y=32):
 
                 self.map = Map(x, y)
-                self.add_entity("npc_test", Npc(PixelVector(400, 500), speed=0.1))
+                self.add_entity(Npc(PixelVector(400, 500), speed=0.1,
+                                    name="npc_test"))
 
         def load_map(self):
 
@@ -70,9 +71,9 @@ class GameLogic:
                         return False
                 return True
 
-        def get_entity(self, identificator):
+        def get_entity(self, entityId):
                 
-                return self.map.get_entity(identificator)
+                return self.map.get_entity(entityId)
 
         def get_object(posSquare):
 
@@ -81,21 +82,22 @@ class GameLogic:
 
                 return self.map.get_object(posSquare)
 
-        def add_entity(self, identificator, entity):
+        def add_entity(self, entity):
 
 #                if not self.map: # map isn't loaded
 #                        return False
 
-                return self.map.add_entity(identificator, entity)
+                return self.map.add_entity(entity)
 
-        def add_player(self, identificator, posPixel):
+        def add_player(self, posPixel, name="tester"):
 
-                player = Player(posPixel, 0.5, "down")
-                return self.add_entity(identificator, player)
+                player = Player(posPixel, 0.5, "down", name)
 
-        def move_entity(self, entity, radius):
+                return self.add_entity(player)
 
-                return self.map.move_entity(entity, radius)
+        def move_entity(self, entityId, radius):
+
+                return self.map.move_entity(entityId, radius)
 
         def is_obstacle(self, posPixel):
 
@@ -140,7 +142,7 @@ class GameLogic:
 
         def update(self):
 
-                for identificator, entity in self.map.entities.items():
+                for entityId, entity in enumerate(self.map.entities):
                         
                         entity.update()
                         
@@ -150,7 +152,7 @@ class GameLogic:
                         if entity.get_action() == "walking":
                                 pos = self.__get_next_position(entity)
                                 if not self.is_obstacle(pos):
-                                        self.move_entity(entity, 5)
+                                        self.move_entity(entityId, 5)
                                         entity.set_got_obstacle(False)
                                 else:
                                         entity.set_got_obstacle(True)

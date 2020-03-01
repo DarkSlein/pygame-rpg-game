@@ -116,3 +116,7 @@ class Map:
     def update(self):
 
         pass
+
+    def get_entities_list(self):
+
+        return self.entities

@@ -81,9 +81,10 @@ class Menu(Scene):
 
     def __init_game_scene(self, gameType, sceneType):
         
-        if gameType == "singleplayer":
-            self.__process.init_logic()
+        if gameType == "multiplayer":
+            self.__process.init_client()
 
+        self.__process.init_logic()
         self.__process.init_game(gameType)
         self.__process.change_scene(self.__process.game)
         self.ingameMode = True

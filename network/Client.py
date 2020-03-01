@@ -2,13 +2,13 @@ import socket
 import threading
 import json
 
-from logic.Map import Map
+from logic.vectors import SquareVector, PixelVector
 
-INFO_TIMEOUT = 10000
+INFO_TIMEOUT = 5
 
 class Client:
 
-    def __init__(self, address, scene):
+    def __init__(self, address):
 
         self.__signal = True
         self.__sendInfoMessages = False # если True, то отправляет info-сообщения
@@ -16,8 +16,6 @@ class Client:
 
         self.__playerId = -1 # значение присваивается, когда приходит connect-сообщение
         self.__entities = {}
-
-        self.__map = Map(32, 32)
 
         try:
             self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,7 +43,14 @@ class Client:
 
     def get_entity(self, entityId):
 
+        if not entityId in self.__entities:
+            return False
+
         return self.__entities[entityId]
+
+    def get_object(self, posSquare):
+
+        pass
 
     def __send_info_query(self):
 
@@ -69,7 +74,7 @@ class Client:
                 self.__signal = False
                 break
 
-            print(data.decode("utf-8"))
+            #print(data.decode("utf-8"))
             
             messageDict = json.loads(data.decode("utf-8").split("}")[0] + "}")
             messageType = messageDict["type"]
@@ -78,7 +83,13 @@ class Client:
                 self.__playerId = messageDict["player_id"]
                 self.__sendInfoMessages = True
             elif messageType == "info":
-                self.entities[entityId] = {"x": messageDict["x"],
+                entityId = messageDict["entity_id"]
+                self.__entities[entityId] = {"x": messageDict["x"],
                                            "y": messageDict["y"],
                                            "status": messageDict["status"],
-                                           "direction": messageDict["direction"]}
+                                           "direction": messageDict["direction"],
+                                           "name": messageDict["name"]}
+
+    def get_entities_dict(self):
+
+        return self.__entities

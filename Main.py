@@ -4,7 +4,7 @@ from logic.GameLogic import *
 from scenes.Menu import *
 from scenes.SingleplayerGame import *
 from scenes.MultiplayerGame import *
-from network.package import *
+from network.Client import Client
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 640
@@ -17,6 +17,7 @@ class Process:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.running = True
         self.logic = False
+        self.client = False
         #self.logic = GameLogic() # or GameLogicClient(self) and GameLogicServer(self)
 
         self.menu = Menu(self)
@@ -43,6 +44,9 @@ class Process:
             if self.logic:
                 self.logic.update()
 
+            if self.client:
+                self.client.update()
+
     def quit(self):
 
         self.running = False
@@ -61,6 +65,10 @@ class Process:
             self.game = SingleplayerGame(self)
         elif gameType == "multiplayer":
             self.game = MultiplayerGame(self)
+
+    def init_client(self):
+
+        self.client = Client(("localhost", 666))
 
         
 if __name__ == '__main__':

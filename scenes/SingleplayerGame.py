@@ -14,8 +14,7 @@ class SingleplayerGame(Scene):
         self.__process = process
         self.camera = Camera(0,0,self)
 
-        self.__process.logic.create_map(480,640)
-        self.map = self.__process.logic.map
+        self.__process.logic.create_map(480,640) # TODO: fix kostyl
         self.tiles = pygame.image.load("assets/tiles.png").convert()
         self.charactersTiles = {
             "player": pygame.image.load("assets/player.png").convert_alpha(),
@@ -68,20 +67,23 @@ class SingleplayerGame(Scene):
         # draw map
         for i in range(start_row, start_row + 11):
             for j in range(start_col, start_col + 14):
+
                 if j < 20 and i < 20:
                     obj = self.__process.logic.get_object(SquareVector(i, j))
-                    sprite = self.tiles.subsurface(obj.j*64,obj.i*64,64,64)
-                    self.__process.screen.blit(sprite,(j*64 - self.camera.x,
-                                                       i*64 - self.camera.y))
+                    texture = self.tiles.subsurface(obj.j*64,obj.i*64,64,64)
+                    self.__process.screen.blit(texture,(j*64 - self.camera.x,
+                                                        i*64 - self.camera.y))
 
     def render_sprites(self):
 
-        for entityId, entity in enumerate(self.map.entities):
+        logic = self.__process.logic
+        for entityId, entity in enumerate(logic.get_entities_list()):
 
             if entity.get_name() == PLAYER_NAME:
                 sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
             elif entity.get_name() == "npc_test":
                 sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
+
             pos = entity.get_position()
             self.__process.screen.blit(sprite,(pos.x - self.camera.x,
                                                pos.y - self.camera.y))

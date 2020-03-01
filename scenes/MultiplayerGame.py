@@ -68,4 +68,7 @@ class MultiplayerGame(Scene):
 
     def get_player_position(self):
 
-        return self.entities[]
+# или всё-таки сделать с gameLogic (multiplayerMode)?
+#        return PixelVector(self.entities[self.client.playerId]["x"],
+#                           self.entities[self.client.playerId]["y"])
+        pass

@@ -54,8 +54,8 @@ class GameLogic:
         def create_map(self, x=32, y=32):
 
                 self.map = Map(x, y)
-                #self.add_entity(Npc(PixelVector(400, 500), speed=0.1,
-                #                    name="npc_test"))
+                self.add_entity(Npc(PixelVector(400, 500), speed=0.1,
+                                    name="npc_test"))
 
         def load_map(self):
 

@@ -8,6 +8,8 @@ from logic.GameLogic import GameLogic
 from logic.entities.Character import Character
 from logic.vectors import SquareVector, PixelVector
 
+LOOP_DELAY = 1/240 #1/60
+
 class Server:
 
     def __init__(self):
@@ -32,7 +34,7 @@ class Server:
         while True:
             
             self.update()
-            sleep(1/60)
+            sleep(LOOP_DELAY)
 
     def wait_for_connections(self):
 
@@ -82,8 +84,8 @@ class ClientHandler(threading.Thread):
                 break
 
             if data != "" and data.decode("utf-8") != "":
-                if data.decode("utf-8") != "info":
-                    print("ID " + str(self.clientId) + ": " + str(data.decode("utf-8")))
+#                if data.decode("utf-8") != "info":
+#                    print("ID " + str(self.clientId) + ": " + str(data.decode("utf-8")))
                 self.__on_command(data.decode("utf-8"))
 
     def __on_command(self, command):

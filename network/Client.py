@@ -67,7 +67,7 @@ class Client:
         while self.__signal:
             
             try:
-                data = self.__socket.recv(128)
+                data = self.__socket.recv(2048) #128
                 
             except:
                 print("You have been disconnected from the server")
@@ -75,20 +75,29 @@ class Client:
                 break
 
             #print(data.decode("utf-8"))
+
+            dataSplited = data.decode("utf-8").split("}")
+
+            for message in dataSplited:
+
+                if message != "":
+                    self.__reply(message + "}")
+                
+    def __reply(self, message):
+
+        messageDict = json.loads(message)
+        messageType = messageDict["type"]
             
-            messageDict = json.loads(data.decode("utf-8").split("}")[0] + "}")
-            messageType = messageDict["type"]
-            
-            if messageType == "connect":
-                self.__playerId = messageDict["player_id"]
-                self.__sendInfoMessages = True
-            elif messageType == "info":
-                entityId = messageDict["entity_id"]
-                self.__entities[entityId] = {"x": messageDict["x"],
-                                           "y": messageDict["y"],
-                                           "status": messageDict["status"],
-                                           "direction": messageDict["direction"],
-                                           "name": messageDict["name"]}
+        if messageType == "connect":
+            self.__playerId = messageDict["player_id"]
+            self.__sendInfoMessages = True
+        elif messageType == "info":
+            entityId = messageDict["entity_id"]
+            self.__entities[entityId] = {"x": messageDict["x"],
+                                         "y": messageDict["y"],
+                                         "status": messageDict["status"],
+                                         "direction": messageDict["direction"],
+                                         "name": messageDict["name"]}
 
     def get_entities_dict(self):
 

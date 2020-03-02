@@ -70,7 +70,7 @@ class Map:
 
         entity = self.get_entity(entityId)
         
-        if entity.get_position().to_square().x > self.__weight:
+        if entity.get_position().to_square().x > self.__weight: # не работает
             return entity.set_position(
                 PixelVector(self.__weight, entity.get_position().y))
         elif entity.get_position().to_square().x < 0:

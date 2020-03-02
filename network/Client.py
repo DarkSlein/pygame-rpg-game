@@ -4,7 +4,7 @@ import json
 
 from logic.vectors import SquareVector, PixelVector
 
-INFO_TIMEOUT = 1 #5
+INFO_TIMEOUT = 5 #5 or 20
 END_OF_MESSAGE = "|"
 
 class Client:
@@ -92,12 +92,12 @@ class Client:
         if messageType == "connect":
             self.__playerId = messageDict["player_id"]
             self.__sendInfoMessages = True
-        elif messageType == "info":
-            entityId = messageDict["entity_id"]
+        elif messageType == "i": # info
+            entityId = messageDict["e"]
             self.__entities[entityId] = {"x": messageDict["x"],
                                          "y": messageDict["y"],
-                                         "status": messageDict["status"],
-                                         "direction": messageDict["direction"],
+                                         "status": messageDict["s"],
+                                         "direction": messageDict["d"],
                                          "name": messageDict["name"]}
 
     def get_entities_dict(self):

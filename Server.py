@@ -129,12 +129,14 @@ class ClientHandler(threading.Thread):
             else:
                 name = ""
 
-            messageDict = {"type": "info", # maybe types: player, npc, projectile
-                           "entity_id": entityId,
+# maybe types: player, npc, projectile
+# maybe: positionPacket and changeDir/StatusPacket
+            messageDict = {"type": "i", # info
+                           "e": entityId, # entity_id
                            "x": entityPos.x,
                            "y": entityPos.y,
-                           "status": entity.get_action(),
-                           "direction": entity.get_direction(),
+                           "s": entity.get_action(), # status
+                           "d": entity.get_direction(), # direction
                            "name": name}
             self.__send(messageDict)
 

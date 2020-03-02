@@ -4,14 +4,14 @@ from logic.entities.Character import Character
 
 class AI:
 
-    def __init__(self, logic):
+    def __init__(self, character):
 
-        self.__logic = logic
+        self.__character = character
 
-    def control(self, character):
+    def control(self):
 
-        character.set_action("walking")
+        self.__character.set_action("walking")
         
-        if character.get_got_obstacle():
+        if self.__character.get_got_obstacle():
             directions = ["left", "right", "up", "down"]
-            character.set_direction(directions[random.randrange(4)])
+            self.__character.set_direction(directions[random.randrange(4)])

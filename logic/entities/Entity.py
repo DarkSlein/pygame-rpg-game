@@ -2,8 +2,10 @@ from logic.vectors import PixelVector
 
 class Entity:
 
-    def __init__(self, posPixel = PixelVector(0, 0), speed=1, direction="right"):
+    def __init__(self, map_, posPixel = PixelVector(0, 0),
+                 speed=1, direction="right"):
 
+        self.__map = map_
         self.__posPixel = posPixel
         self.__speed = speed
         self.__status = "standing"

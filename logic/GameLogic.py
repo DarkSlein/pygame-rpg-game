@@ -49,13 +49,12 @@ class GameLogic:
                     GameObject(2,4,walkable=True,shootable=True)
                     ]
                 self.__state = "game"
-                self.__ai = AI(self)
 
         def create_map(self, x=32, y=32):
 
                 self.map = Map(x, y)
-                self.add_entity(Npc(PixelVector(400, 500), speed=0.2,
-                                    name="npc_test"))
+                self.add_entity(Npc(self.map, PixelVector(400, 500),
+                                    speed=0.2, name="npc_test"))
 
         def load_map(self):
 
@@ -91,7 +90,7 @@ class GameLogic:
 
         def add_player(self, posPixel, name="tester"):
 
-                player = Player(posPixel, 0.5, "down", name)
+                player = Player(self.map, posPixel, 0.5, "down", name)
 
                 return self.add_entity(player)
 
@@ -145,9 +144,6 @@ class GameLogic:
                 for entityId, entity in enumerate(self.map.entities):
                         
                         entity.update()
-                        
-                        if type(entity) is Npc:
-                                self.__ai.control(entity)
                                 
                         if entity.get_action() == "walking":
                                 pos = self.__get_next_position(entity)

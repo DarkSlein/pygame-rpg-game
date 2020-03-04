@@ -6,6 +6,7 @@ from logic.entities.Player import Player
 from logic.entities.Npc import Npc
 from logic.objects.GameObject import GameObject
 from logic.vectors import SquareVector, PixelVector
+#from logic.functions import *
 
 FPS = 60
 loopDelay = 1/FPS
@@ -98,7 +99,32 @@ class GameLogic:
 
                 return self.map.move_entity(entityId, radius)
 
-        def is_obstacle(self, posPixel):
+        def is_obstacle(self, posPixel, currentEntity=None):
+
+                isEntity = self.is_entity_obstacle(posPixel, currentEntity)
+                isObject = self.is_object_obstacle(posPixel)
+
+                return isEntity or isObject
+
+        def is_entity_obstacle(self, posPixel, currentEntity=None):
+
+                isEntity = False
+
+                for entityId, entity in enumerate(self.map.entities):
+
+                        if currentEntity and entity == currentEntity:
+                                continue
+
+                        charPos = entity.get_position()
+                        if (int(posPixel.x) in range(charPos.x - 20,
+                                                charPos.x + 20) and \
+                            int(posPixel.y) in range(charPos.y - 32,
+                                                charPos.y + 32)):
+                                isEntity = True
+
+                return isEntity
+
+        def is_object_obstacle(self, posPixel):
 
                 posPixel.x += 20
                 posPixel.y += 20
@@ -110,13 +136,11 @@ class GameLogic:
                 
                 objNum1 = self.map.grid[posSquare1.y][posSquare1.x]
                 objNum2 = self.map.grid[posSquare2.y][posSquare2.x]
-                #print(self.objects[objNum1].walkable,
-                #      self.map.grid[posSquare1.y][posSquare1.x],
-                #      posSquare1.x, posSquare1.y,
-                #      self.map.grid[posSquare2.y + 1][posSquare2.x],
-                #      posSquare2.x, posSquare2.y)
-                result = not self.objects[objNum1].walkable or not self.objects[objNum2].walkable
-                return result
+
+                isObject = not self.objects[objNum1].walkable or \
+                not self.objects[objNum2].walkable
+
+                return isObject
 
         def __get_next_position(self, entity):
 
@@ -144,10 +168,10 @@ class GameLogic:
                 for entityId, entity in enumerate(self.map.entities):
                         
                         entity.update()
-                                
+
                         if entity.get_action() == "walking":
                                 pos = self.__get_next_position(entity)
-                                if not self.is_obstacle(pos):
+                                if not self.is_obstacle(pos, entity):
                                         self.move_entity(entityId, 5)
                                         entity.set_got_obstacle(False)
                                 else:

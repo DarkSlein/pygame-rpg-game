@@ -10,7 +10,7 @@ class Npc(Character):
         Character.__init__(self, map_, posPixel, speed,
                            direction, name, maxHealth, health)
 
-        self.__ai = AI(self)
+        self.__ai = AI(self, map_)
 
     def update(self):
 

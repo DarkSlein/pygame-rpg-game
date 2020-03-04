@@ -108,23 +108,23 @@ class GameLogic:
 
         def is_entity_obstacle(self, posPixel, currentEntity=None):
 
-                isEntity = False
+                entityObstacle = False
 
-                for entityId, entity in enumerate(self.map.entities):
+                for entityId, entity in self.get_entities().items():
 
                         if currentEntity and entity == currentEntity:
                                 continue
 
                         charPos = entity.get_position()
-                        if (int(posPixel.x) in range(charPos.x - 20,
+                        if (int(posPixel.x) in range(charPos.x - 20, # TODO: character.x + character.sizeX
                                                 charPos.x + 20) and \
                             int(posPixel.y) in range(charPos.y - 32,
                                                 charPos.y + 32)):
-                                isEntity = True
+                                entityObstacle = entity
 
-                return isEntity
+                return entityObstacle
 
-        def is_object_obstacle(self, posPixel):
+        def is_object_obstacle(self, posPixel, shooting=False):
 
                 posPixel.x += 20
                 posPixel.y += 20
@@ -137,8 +137,12 @@ class GameLogic:
                 objNum1 = self.map.grid[posSquare1.y][posSquare1.x]
                 objNum2 = self.map.grid[posSquare2.y][posSquare2.x]
 
-                isObject = not self.objects[objNum1].walkable or \
-                not self.objects[objNum2].walkable
+                if not shooting:
+                        isObject = not self.objects[objNum1].walkable or \
+                        not self.objects[objNum2].walkable
+                else:
+                        isObject = not self.objects[objNum1].shootable or \
+                        not self.objects[objNum2].shootable
 
                 return isObject
 
@@ -165,21 +169,29 @@ class GameLogic:
 
         def update(self):
 
-                for entityId, entity in enumerate(self.map.entities):
+                for entityId, entity in self.get_entities().items():
                         
                         entity.update()
 
-                        if entity.get_action() == "walking":
+                        if entity.get_action() == "walking" or \
+                           entity.get_action() == "flying":
                                 pos = self.__get_next_position(entity)
-                                if not self.is_obstacle(pos, entity):
+                                entityObstacle = self.is_entity_obstacle(pos,
+                                                                         entity)
+                                isObject = self.is_object_obstacle(pos)
+                                if isObject:
+                                        entity.set_got_obstacle(True)
+                                        entity.on_obstacle()
+                                elif entityObstacle:
+                                        entity.set_got_obstacle(True)
+                                        entity.on_obstacle(entityObstacle)
+                                else:
                                         self.move_entity(entityId, 5)
                                         entity.set_got_obstacle(False)
-                                else:
-                                        entity.set_got_obstacle(True)
                            
 
                 self.map.update()
 
-        def get_entities_list(self):
+        def get_entities(self):
 
-                return self.map.get_entities_list()
+                return self.map.get_entities()

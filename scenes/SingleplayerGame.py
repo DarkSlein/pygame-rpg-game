@@ -5,6 +5,9 @@ from scenes.Camera import Camera
 from logic.Map import Map
 from logic.vectors import SquareVector, PixelVector
 
+from logic.entities.Character import Character
+from logic.entities.Fireball import Fireball
+
 PLAYER_NAME = "player1"
 
 class SingleplayerGame(Scene):
@@ -18,7 +21,8 @@ class SingleplayerGame(Scene):
         self.tiles = pygame.image.load("assets/tiles.png").convert()
         self.charactersTiles = {
             "player": pygame.image.load("assets/player.png").convert_alpha(),
-            "player2": pygame.image.load("assets/player2.png").convert_alpha()
+            "player2": pygame.image.load("assets/player2.png").convert_alpha(),
+            "fireball": pygame.image.load("assets/fireball.png").convert_alpha() 
             }
         self.playerId = self.__process.logic.add_player(PixelVector(100,100),
                                                         name=PLAYER_NAME)
@@ -41,6 +45,8 @@ class SingleplayerGame(Scene):
             elif event.key == pygame.K_LEFT:
                 self.__get_player().set_direction("left")
                 self.__get_player().set_action("walking")
+            elif event.key == pygame.K_SPACE:
+                self.__get_player().cast()
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN or event.key == pygame.K_UP \
                or event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
@@ -77,12 +83,18 @@ class SingleplayerGame(Scene):
     def render_sprites(self):
 
         logic = self.__process.logic
-        for entityId, entity in enumerate(logic.get_entities_list()):
+        for entityId, entity in logic.get_entities().items():
 
-            if entity.get_name() == PLAYER_NAME:
-                sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
-            elif entity.get_name() == "npc_test":
-                sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
+            if issubclass(type(entity), Character):
+                if entity.get_name() == PLAYER_NAME:
+                    sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
+                elif entity.get_name() == "npc_test":
+                    sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
+                else:
+                    sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
+
+            elif issubclass(type(entity), Fireball):
+                sprite = self.charactersTiles["fireball"]
 
             pos = entity.get_position()
             self.__process.screen.blit(sprite,(pos.x - self.camera.x,

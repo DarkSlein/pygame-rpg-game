@@ -62,3 +62,11 @@ class Entity:
     def get_got_obstacle(self):
 
         return self.__gotObstacle
+
+    def on_obstacle(self, entity=None):
+
+        pass
+
+    def get_map(self):
+
+        return self.__map

@@ -34,7 +34,9 @@ class Map:
             [3 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,23,24,24,24,24,24,24,24],
             [3 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1],
         ]
-        self.entities = []
+        self.entities = {}
+        self.__entityIds = 0
+        self.__projectiles = []
         self.__objects = [Background]
 
 #    def is_obstacle(self, posSquare):
@@ -89,27 +91,27 @@ class Map:
 
         return self.grid[posSquare.x][posSquare.y] is not 0
 
-    #def entity_exists(self, identificator):
+    def entity_exists(self, entityId):
 
-        #return identificator in self.entities
+        return entityId in self.entities
 
     def add_object(self, posSquare, objType): # TODO: exception throwing
 
         self.grid[posSquare.x][posSquare.y] = objType
 
-
     def add_entity(self, entity): # TODO: exception throwing
 
-        entityId = len(self.entities)
-        self.entities.append(entity)
+        entityId = self.__entityIds
+        self.entities[entityId] = entity
+        self.__entityIds += 1
 
         return entityId
 
+    def remove_entity(self, entityId):
+
+        del self.entities[entityId]
+
     def load(self, array):
-
-        pass
-
-    def __is_walkable(self, posSquare):
 
         pass
 
@@ -117,6 +119,6 @@ class Map:
 
         pass
 
-    def get_entities_list(self):
+    def get_entities(self):
 
         return self.entities

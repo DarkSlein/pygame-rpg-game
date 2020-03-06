@@ -1,6 +1,7 @@
 from logic.vectors import PixelVector
 from logic.entities.Character import Character
 from logic.entities.Fireball import Fireball
+from logic.functions import *
 
 class Player(Character):
 
@@ -12,8 +13,9 @@ class Player(Character):
 
     def cast(self):
 
-        projPos = self.get_position().copy()
-        projPos.x += 100
+        projPos = shift_position(self.get_position().copy(),
+                                 self.get_direction(),
+                                 30) # TODO: proj size
         self.get_map().add_entity(Fireball(self.get_map(), self,
                                        posPixel=projPos,
                                        direction=self.get_direction()))

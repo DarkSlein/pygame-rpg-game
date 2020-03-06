@@ -94,7 +94,7 @@ class SingleplayerGame(Scene):
                     sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
 
             elif issubclass(type(entity), Fireball):
-                sprite = self.charactersTiles["fireball"]
+                sprite = self.charactersTiles["fireball"].subsurface(0*64,0*64,64,64)
 
             pos = entity.get_position()
             self.__process.screen.blit(sprite,(pos.x - self.camera.x,

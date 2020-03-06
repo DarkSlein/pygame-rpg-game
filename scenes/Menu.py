@@ -80,11 +80,13 @@ class Menu(Scene):
             self.currentItemNumber = maxItemNumber
 
     def __init_game_scene(self, gameType, sceneType):
-        
+
+        multiplayerMode = False
         if gameType == "multiplayer":
             self.__process.init_client()
+            multiplayerMode = True
 
-        self.__process.init_logic()
+        self.__process.init_logic(multiplayerMode)
         self.__process.init_game(gameType)
         self.__process.change_scene(self.__process.game)
         self.ingameMode = True

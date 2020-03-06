@@ -5,6 +5,8 @@ from scenes.Camera import Camera
 from network.Client import Client
 from logic.vectors import SquareVector, PixelVector
 
+from logic.entities.Fireball import Fireball
+
 PLAYER_NAME = "player1" # TODO: custom names
 
 class MultiplayerGame(Scene):
@@ -18,7 +20,8 @@ class MultiplayerGame(Scene):
         self.tiles = pygame.image.load("assets/tiles.png").convert()
         self.charactersTiles = {
             "player": pygame.image.load("assets/player.png").convert_alpha(),
-            "player2": pygame.image.load("assets/player2.png").convert_alpha()
+            "player2": pygame.image.load("assets/player2.png").convert_alpha(),
+            "fireball": pygame.image.load("assets/fireball.png").convert_alpha()
             }
 
         self.entities = {}
@@ -40,6 +43,8 @@ class MultiplayerGame(Scene):
             elif event.key == pygame.K_LEFT:
                 self.__process.client.send("walking")
                 self.__process.client.send("left")
+            elif event.key == pygame.K_SPACE:
+                self.__process.client.send("cast")
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN or event.key == pygame.K_UP \
                or event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
@@ -79,12 +84,15 @@ class MultiplayerGame(Scene):
         client = self.__process.client
         for entityId, entityDict in client.get_entities_dict().items():
 
-            if entityDict["name"] == PLAYER_NAME:
+            # TODO: different skins by name
+            if entityDict["objType"] == "p": # player
                 sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
-            elif entityDict["name"] == "npc_test":
+            elif "name" in entityDict and entityDict["name"] == "npc_test": # TODO: dirty hack
                 sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
+            elif entityDict["objType"] == "f": # fireball
+                sprite = self.charactersTiles["fireball"].subsurface(0*64,0*64,64,64)
             else:
-                sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
+                sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
 
             pos = PixelVector(entityDict["x"], entityDict["y"])
             self.__process.screen.blit(sprite,(pos.x - self.camera.x,

@@ -13,7 +13,7 @@ loopDelay = 1/FPS
 
 class GameLogic:
 
-        def __init__(self):
+        def __init__(self, multiplayerMode=False):
 
                 self.map = False
                 self.active = True # TODO: when pause then active is False
@@ -50,6 +50,8 @@ class GameLogic:
                     GameObject(2,4,walkable=True,shootable=True)
                     ]
                 self.__state = "game"
+                self.__multiplayerMode = multiplayerMode
+                self.__deletedEntitiesIds = []
 
         def create_map(self, x=32, y=32):
 
@@ -169,6 +171,8 @@ class GameLogic:
 
         def update(self):
 
+                entitiesForDeletion = []
+
                 for entityId, entity in self.get_entities().items():
                         
                         entity.update()
@@ -182,16 +186,32 @@ class GameLogic:
                                 if isObject:
                                         entity.set_got_obstacle(True)
                                         entity.on_obstacle()
-                                elif entityObstacle:
+                                elif entityObstacle and \
+                                     entityObstacle.get_action() != "dead":
                                         entity.set_got_obstacle(True)
                                         entity.on_obstacle(entityObstacle)
                                 else:
                                         self.move_entity(entityId, 5)
                                         entity.set_got_obstacle(False)
-                           
+
+                        elif entity.get_action() == "destroyed":
+                                entitiesForDeletion.append(entityId)
+
+                for entityId in entitiesForDeletion:
+                        del self.map.get_entities()[entityId]
+                        if self.__multiplayerMode: # вообще mpMode - про другое: про логику на клиенте в режиме мп
+                                self.__deletedEntitiesIds.append(entityId)
 
                 self.map.update()
 
         def get_entities(self):
 
-                return self.map.get_entities()
+                return self.map.get_entities().copy()
+
+        def get_deleted_entities(self): # for multiplayer clients
+
+                return self.__deletedEntitiesIds
+
+        def clear_deleted_entities(self):
+
+                self.__deletedEntitiesIds.clear()

@@ -1,10 +1,16 @@
-import PixelVector
-import SquareVector
+from logic.vectors import PixelVector, SquareVector
 
-def toPixelVector(posSquare):
+def shift_position(pos, direction, radius):
 
-    return PixelVector(posSquare.x*32 + 16, posSquare.y*32 + 16)
+    resultPos = pos
 
-def toSquareVector(posPixel):
+    if direction == "left":
+        resultPos.x -= int(radius)
+    elif direction== "right":
+        resultPos.x += int(radius)
+    elif direction == "up":
+        resultPos.y -= int(radius)
+    elif direction == "down":
+        resultPos.y += int(radius)
 
-    return SquareVector(int((posPixel.x - 16)/32), int((posPixel.y - 16)/32))    
+    return resultPos

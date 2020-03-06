@@ -34,3 +34,10 @@ class Character(Entity):
     def cast(self):
 
         pass
+
+    def update(self):
+
+        super().update()
+
+        if self.__health < 0: # TODO: health < -constitution
+            self.set_action("dead")

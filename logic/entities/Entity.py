@@ -1,4 +1,5 @@
 from logic.vectors import PixelVector
+from logic.functions import *
 
 class Entity:
 
@@ -45,7 +46,15 @@ class Entity:
 
     def set_action(self, status):
 
+        if self.__status == "dead":
+            return
+
         self.__status = status
+
+    def resurrect(self):
+
+        if self.__status == "dead":
+            self.__status = "standing"
 
     def get_action(self):
 

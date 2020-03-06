@@ -34,6 +34,16 @@ class Client:
 
         self.__send_info_query()
 
+#        entitiesForDeletion = []
+
+#        for entityId, entityDict in self.__entities.items():
+
+#            if entityDict["status"] == "destroyed":
+#                entitiesForDeletion.append(entityId)
+
+#        for entityId in entitiesForDeletion:
+#            del self.__entities[entityId]  
+
     def send(self, message):
 
         self.__socket.sendall(str.encode(message + END_OF_MESSAGE))
@@ -92,14 +102,30 @@ class Client:
         if messageType == "connect":
             self.__playerId = messageDict["player_id"]
             self.__sendInfoMessages = True
+            
         elif messageType == "i": # info
             entityId = messageDict["e"]
-            self.__entities[entityId] = {"x": messageDict["x"],
-                                         "y": messageDict["y"],
-                                         "status": messageDict["s"],
-                                         "direction": messageDict["d"],
-                                         "name": messageDict["name"]}
+            if not entityId in self.__entities:
+                self.__entities[entityId] = {}
+                
+            self.__entities[entityId]["x"] = messageDict["x"]
+            self.__entities[entityId]["y"] = messageDict["y"]
+            self.__entities[entityId]["status"] = messageDict["s"]
+            self.__entities[entityId]["direction"] = messageDict["d"]
+            self.__entities[entityId]["objType"] = messageDict["o"]
+            
+        elif messageType == "ch": # character
+            entityId = messageDict["e"]
+            if not entityId in self.__entities:
+                self.__entities[entityId] = {}
+
+            self.__entities[entityId]["name"] = messageDict["n"]
+
+        elif messageType == "d":
+            entityId = messageDict["e"]
+            if entityId in self.__entities:
+                del self.__entities[entityId]
 
     def get_entities_dict(self):
 
-        return self.__entities
+        return self.__entities.copy()

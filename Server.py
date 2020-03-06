@@ -6,10 +6,25 @@ from time import sleep
 
 from logic.GameLogic import GameLogic
 from logic.entities.Character import Character
+
+from logic.entities.Player import Player
+from logic.entities.Npc import Npc
+from logic.entities.Fireball import Fireball
+
 from logic.vectors import SquareVector, PixelVector
 
 LOOP_DELAY = 1/240 #1/60
 END_OF_MESSAGE = "|"
+
+def obj_to_str(obj):
+    if type(obj) is Player:
+        return "p"
+    elif type(obj) is Npc:
+        return "n"
+    elif type(obj) is Fireball:
+        return "f"
+    else:
+        return "u" # unknown
 
 class Server:
 
@@ -18,7 +33,7 @@ class Server:
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__totalConnections = 0
         self.__connections = []
-        self.logic = GameLogic()
+        self.logic = GameLogic(multiplayerMode=True)
         self.logic.create_map()
 
     def start(self, address):
@@ -112,6 +127,8 @@ class ClientHandler(threading.Thread):
         elif command == "right" or command == "left" or \
         command == "down" or command == "up":
             self.server.logic.get_entity(self.playerId).set_direction(command)
+        elif command == "cast":
+            self.server.logic.get_entity(self.playerId).cast()
 
     def __send(self, messageDict):
 
@@ -120,14 +137,9 @@ class ClientHandler(threading.Thread):
 
     def __send_info(self):
 
-        for entityId, entity in enumerate(self.server.logic.map.entities):
+        for entityId, entity in self.server.logic.get_entities().items():
 
             entityPos = entity.get_position()
-            
-            if issubclass(type(entity), Character): # TODO: fix kostyl
-                name = entity.get_name()
-            else:
-                name = ""
 
 # maybe types: player, npc, projectile
 # maybe: positionPacket and changeDir/StatusPacket
@@ -137,8 +149,20 @@ class ClientHandler(threading.Thread):
                            "y": entityPos.y,
                            "s": entity.get_action(), # status
                            "d": entity.get_direction(), # direction
-                           "name": name}
+                           "o": obj_to_str(entity)} # object type
             self.__send(messageDict)
+
+        self.__send_deleted_entities()
+
+    def __send_deleted_entities(self):
+
+        for entityId in self.server.logic.get_deleted_entities():
+
+            messageDict = {"type": "d", # deleted entities
+                           "e": entityId}
+            self.__send(messageDict)
+
+        self.server.logic.clear_deleted_entities()
 
     def __create_player(self):
 
@@ -146,6 +170,11 @@ class ClientHandler(threading.Thread):
         print("Player created...")
 
         self.__send_player_id()
+        self.__send_info()
+
+        for entityId, entity in self.server.logic.get_entities().items():
+            if issubclass(type(entity), Character):
+                self.__send_character(entity, entityId)
 
     def __send_player_id(self):
 
@@ -155,6 +184,15 @@ class ClientHandler(threading.Thread):
 
         print("Player ID " + str(self.playerId) + " is send to client " +
               str(self.clientId) + "...")
+
+    def __send_character(self, character, entityId):
+
+        messageDict = {"type": "ch", # character
+                       "e": entityId, # entity id
+                       "n": character.get_name() # name
+                       } # skin, abilities
+        self.__send(messageDict)
+
 
 if __name__ == '__main__':
 

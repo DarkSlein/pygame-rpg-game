@@ -33,7 +33,7 @@ class Server:
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__totalConnections = 0
         self.__connections = []
-        self.logic = GameLogic(multiplayerMode=True)
+        self.logic = GameLogic("server")
         self.logic.create_map()
 
     def start(self, address):
@@ -74,6 +74,12 @@ class Server:
 
         self.logic.update()
 
+    def broadcast(self, data, exceptionClientId=None): # TODO: exceptionId
+
+        for client in self.__connections:
+
+            client.sendJson(data)
+
 class ClientHandler(threading.Thread):
 
     def __init__(self, socket, address, clientId, server):
@@ -111,6 +117,7 @@ class ClientHandler(threading.Thread):
 #                            print("ID " + str(self.clientId) + ": " +
 #                                  str(message))
                         self.__on_command(message)
+                        self.__send_deleted_entities()
 
     def __on_command(self, command):
 
@@ -130,7 +137,7 @@ class ClientHandler(threading.Thread):
         elif command == "cast":
             self.server.logic.get_entity(self.playerId).cast()
 
-    def __send(self, messageDict):
+    def sendJson(self, messageDict):
 
         messageJson = json.dumps(messageDict)
         self.socket.sendall(messageJson.encode())
@@ -141,7 +148,6 @@ class ClientHandler(threading.Thread):
 
             entityPos = entity.get_position()
 
-# maybe types: player, npc, projectile
 # maybe: positionPacket and changeDir/StatusPacket
             messageDict = {"type": "i", # info
                            "e": entityId, # entity_id
@@ -150,9 +156,9 @@ class ClientHandler(threading.Thread):
                            "s": entity.get_action(), # status
                            "d": entity.get_direction(), # direction
                            "o": obj_to_str(entity)} # object type
-            self.__send(messageDict)
+            self.sendJson(messageDict)
 
-        self.__send_deleted_entities()
+#        self.__send_deleted_entities()
 
     def __send_deleted_entities(self):
 
@@ -160,7 +166,7 @@ class ClientHandler(threading.Thread):
 
             messageDict = {"type": "d", # deleted entities
                            "e": entityId}
-            self.__send(messageDict)
+            self.server.broadcast(messageDict)
 
         self.server.logic.clear_deleted_entities()
 
@@ -180,7 +186,7 @@ class ClientHandler(threading.Thread):
 
         messageDict = {"type": "connect",
                        "player_id": self.playerId}
-        self.__send(messageDict)
+        self.sendJson(messageDict)
 
         print("Player ID " + str(self.playerId) + " is send to client " +
               str(self.clientId) + "...")
@@ -191,7 +197,7 @@ class ClientHandler(threading.Thread):
                        "e": entityId, # entity id
                        "n": character.get_name() # name
                        } # skin, abilities
-        self.__send(messageDict)
+        self.sendJson(messageDict)
 
 
 if __name__ == '__main__':

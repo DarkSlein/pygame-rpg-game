@@ -55,7 +55,7 @@ class Process:
 
         self.currentScene = scene
 
-    def init_logic(self, multiplayerMode=False):
+    def init_logic(self, multiplayerMode="singleplayer"):
 
         self.logic = GameLogic(multiplayerMode)
 

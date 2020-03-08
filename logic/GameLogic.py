@@ -13,7 +13,7 @@ loopDelay = 1/FPS
 
 class GameLogic:
 
-        def __init__(self, multiplayerMode=False):
+        def __init__(self, mode=False):
 
                 self.map = False
                 self.active = True # TODO: when pause then active is False
@@ -50,7 +50,7 @@ class GameLogic:
                     GameObject(2,4,walkable=True,shootable=True)
                     ]
                 self.__state = "game"
-                self.__multiplayerMode = multiplayerMode
+                self.__mode = mode
                 self.__deletedEntitiesIds = []
 
         def create_map(self, x=32, y=32):
@@ -199,7 +199,7 @@ class GameLogic:
 
                 for entityId in entitiesForDeletion:
                         del self.map.get_entities()[entityId]
-                        if self.__multiplayerMode: # вообще mpMode - про другое: про логику на клиенте в режиме мп
+                        if self.__mode == "server":
                                 self.__deletedEntitiesIds.append(entityId)
 
                 self.map.update()

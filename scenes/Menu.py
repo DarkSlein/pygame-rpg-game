@@ -84,9 +84,10 @@ class Menu(Scene):
         multiplayerMode = False
         if gameType == "multiplayer":
             self.__process.init_client()
-            multiplayerMode = True
+            self.__process.init_logic("client")
+        else:
+            self.__process.init_logic("singleplayer")
 
-        self.__process.init_logic(multiplayerMode)
         self.__process.init_game(gameType)
         self.__process.change_scene(self.__process.game)
         self.ingameMode = True

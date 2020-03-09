@@ -4,9 +4,10 @@ from logic.entities.Entity import Entity
 class Character(Entity):
 
     def __init__(self, map_, posPixel=PixelVector(0, 0), speed=1,
-                 direction="right", name="tester", maxHealth=30, health=30):
+                 direction="right", size=PixelVector(40, 64),
+                 name="tester", maxHealth=30, health=30):
         
-        super().__init__(map_, posPixel, speed, direction)
+        super().__init__(map_, posPixel, speed, direction, size)
 
         self.__name = name
         self.__health = health

@@ -5,10 +5,10 @@ from logic.vectors import PixelVector
 class Projectile(Entity):
 
     def __init__(self, map_, owner, posPixel = PixelVector(0, 0),
-                 speed=1, direction="right",
+                 speed=1, direction="right", size=PixelVector(40, 64),
                  damage=5, damageType="physical"):
 
-        Entity.__init__(self, map_, posPixel, speed, direction)
+        super().__init__(map_, posPixel, speed, direction, size)
         self.__owner = owner
         self.__damage = damage
         self.__damageType = damageType

@@ -56,6 +56,10 @@ class GameLogic:
         def create_map(self, x=32, y=32):
 
                 self.map = Map(x, y)
+
+                if self.__mode == "client":
+                        return
+                
                 self.add_entity(Npc(self.map, PixelVector(400, 500),
                                     speed=0.2, name="npc_test"))
 
@@ -93,7 +97,8 @@ class GameLogic:
 
         def add_player(self, posPixel, name="tester"):
 
-                player = Player(self.map, posPixel, 0.5, "down", name)
+                player = Player(self.map, posPixel, speed=0.5,
+                                direction="down", name=name)
 
                 return self.add_entity(player)
 
@@ -117,11 +122,15 @@ class GameLogic:
                         if currentEntity and entity == currentEntity:
                                 continue
 
-                        charPos = entity.get_position()
-                        if (int(posPixel.x) in range(charPos.x - 20, # TODO: character.x + character.sizeX
-                                                charPos.x + 20) and \
-                            int(posPixel.y) in range(charPos.y - 32,
-                                                charPos.y + 32)):
+                        entityPos = entity.get_position()
+                        entitySize = entity.get_size()
+                        x1 = entityPos.x - entitySize.x // 2
+                        x2 = entityPos.x + entitySize.x // 2
+                        y1 = entityPos.y - entitySize.y // 2
+                        y2 = entityPos.y + entitySize.y // 2
+
+                        if (int(posPixel.x) in range(x1, x2) and \
+                            int(posPixel.y) in range(y1, y2)):
                                 entityObstacle = entity
 
                 return entityObstacle
@@ -179,20 +188,8 @@ class GameLogic:
 
                         if entity.get_action() == "walking" or \
                            entity.get_action() == "flying":
-                                pos = self.__get_next_position(entity)
-                                entityObstacle = self.is_entity_obstacle(pos,
-                                                                         entity)
-                                isObject = self.is_object_obstacle(pos)
-                                if isObject:
-                                        entity.set_got_obstacle(True)
-                                        entity.on_obstacle()
-                                elif entityObstacle and \
-                                     entityObstacle.get_action() != "dead":
-                                        entity.set_got_obstacle(True)
-                                        entity.on_obstacle(entityObstacle)
-                                else:
+                                if not self.__check_obstacles(entityId, entity):
                                         self.move_entity(entityId, 5)
-                                        entity.set_got_obstacle(False)
 
                         elif entity.get_action() == "destroyed":
                                 entitiesForDeletion.append(entityId)
@@ -203,6 +200,27 @@ class GameLogic:
                                 self.__deletedEntitiesIds.append(entityId)
 
                 self.map.update()
+
+        def __check_obstacles(self, entityId, entity):
+
+                pos = self.__get_next_position(entity)
+                entityObstacle = self.is_entity_obstacle(pos, entity)
+
+                isObject = self.is_object_obstacle(pos)
+
+                if isObject:
+                        entity.set_got_obstacle(True)
+                        entity.on_obstacle()
+                        return True
+
+                elif entityObstacle and entityObstacle.get_action() != "dead":
+                        entity.set_got_obstacle(True)
+                        entity.on_obstacle(entityObstacle)
+                        return True
+
+                else:
+                        entity.set_got_obstacle(False)
+                        return False
 
         def get_entities(self):
 

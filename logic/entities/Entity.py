@@ -3,8 +3,8 @@ from logic.functions import *
 
 class Entity:
 
-    def __init__(self, map_, posPixel = PixelVector(0, 0),
-                 speed=1, direction="right"):
+    def __init__(self, map_, posPixel=PixelVector(0, 0),
+                 speed=1, direction="right", size=PixelVector(40, 64)):
 
         self.__map = map_
         self.__posPixel = posPixel
@@ -12,6 +12,7 @@ class Entity:
         self.__status = "standing"
         self.__direction = direction
         self.__gotObstacle = False
+        self.__size = size
 
     def update(self):
 
@@ -32,6 +33,14 @@ class Entity:
     def set_direction(self, direction):
 
         self.__direction = direction
+
+    def get_size(self):
+
+        return self.__size
+
+    def set_size(self, size):
+
+        self.__size = size
 
     def move(self, radius=1): # TODO: dir as radians
 

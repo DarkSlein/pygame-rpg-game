@@ -6,10 +6,12 @@ from logic.functions import *
 class Player(Character):
 
     def __init__(self, map_, posPixel=PixelVector(0, 0), speed=1,
-                 direction="right", name="tester", maxHealth=30, health=30):
+                 direction="right", size=PixelVector(40, 64),
+                 name="tester", maxHealth=30, health=30):
         
         super().__init__(map_, posPixel, speed,
-                         direction, name, maxHealth, health)
+                         direction, size,
+                         name, maxHealth, health)
 
     def cast(self):
 

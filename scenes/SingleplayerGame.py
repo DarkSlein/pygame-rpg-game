@@ -22,7 +22,8 @@ class SingleplayerGame(Scene):
         self.charactersTiles = {
             "player": pygame.image.load("assets/player.png").convert_alpha(),
             "player2": pygame.image.load("assets/player2.png").convert_alpha(),
-            "fireball": pygame.image.load("assets/fireball.png").convert_alpha() 
+            "fireball": pygame.image.load("assets/fireball.png").convert_alpha(),
+            "orc": pygame.image.load("assets/orc.png").convert_alpha()
             }
         self.playerId = self.__process.logic.add_player(PixelVector(100,100),
                                                         name=PLAYER_NAME)
@@ -71,7 +72,7 @@ class SingleplayerGame(Scene):
         start_row = int(self.camera.y // 64)
 
         # draw map
-        for i in range(start_row, start_row + 11):
+        for i in range(start_row, start_row + 11): # TODO: constants
             for j in range(start_col, start_col + 14):
 
                 if j < 20 and i < 20:
@@ -86,10 +87,12 @@ class SingleplayerGame(Scene):
         for entityId, entity in logic.get_entities().items():
 
             if issubclass(type(entity), Character):
-                if entity.get_name() == PLAYER_NAME:
+                if entity.get_name() == PLAYER_NAME: # TODO: animation
                     sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
                 elif entity.get_name() == "npc_test":
                     sprite = self.charactersTiles["player2"].subsurface(0*64,2*64,64,64)
+                elif entity.get_name() == "monster":
+                    sprite = self.charactersTiles["orc"].subsurface(0*64,2*64,64,64)
                 else:
                     sprite = self.charactersTiles["player"].subsurface(0*64,2*64,64,64)
 

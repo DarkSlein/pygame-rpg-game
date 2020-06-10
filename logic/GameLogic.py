@@ -2,6 +2,7 @@ import time
 
 from logic.Map import Map
 from logic.AI import AI
+from logic.entities.Character import Character
 from logic.entities.Player import Player
 from logic.entities.Npc import Npc
 from logic.objects.GameObject import GameObject
@@ -188,11 +189,20 @@ class GameLogic:
 
                         if entity.get_action() == "walking" or \
                            entity.get_action() == "flying":
+                                print(self.find_target(entity, 64))
                                 if not self.__check_obstacles(entityId, entity):
                                         self.move_entity(entityId, 5)
 
                         elif entity.get_action() == "destroyed":
                                 entitiesForDeletion.append(entityId)
+
+                        elif entity.get_action() == "attack" and \
+                             issubclass(type(entity), Character):
+                                victim = self.find_target(entity.get_position(),
+                                                          64) # TODO: attack range
+                                if victim:
+                                        entity.attack(victim)
+                                # TODO: play sound
 
                 for entityId in entitiesForDeletion:
                         del self.map.get_entities()[entityId]
@@ -221,6 +231,39 @@ class GameLogic:
                 else:
                         entity.set_got_obstacle(False)
                         return False
+
+        def find_target(self, posPixel, distance):
+
+                for entityId, entity in self.get_entities().items():
+
+                        if not issubclass(type(entity), Character) or \
+                           entity.get_action() == "dead":
+                                continue
+
+                        direction = entity.get_direction()
+                        entityPos = entity.get_position() # TODO: refactoring
+                        if direction == "left" and \
+                           entityPos.x in range(posPixel.x - distance,
+                                                posPixel.x) and \
+                           entityPos.y in range(posPixel.y - distance // 2,
+                                                posPixel.y + distance // 2) or \
+                           direction == "right" and \
+                           entityPos.x in range(posPixel.x,
+                                                posPixel.x + distance) and \
+                           entityPos.y in range(posPixel.y - distance // 2,
+                                                posPixel.y + distance // 2) or \
+                           direction == "up" and \
+                           entityPos.x in range(posPixel.y - distance,
+                                                posPixel.y) and \
+                           entityPos.y in range(posPixel.x - distance // 2,
+                                                posPixel.x + distance // 2) or \
+                           direction == "down" and \
+                           entityPos.x in range(posPixel.y,
+                                                posPixel.y + distance) and \
+                           entityPos.y in range(posPixel.x - distance // 2,
+                                                posPixel.x + distance // 2):
+                                return entity
+                           
 
         def get_entities(self):
 

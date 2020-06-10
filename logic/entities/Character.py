@@ -28,6 +28,10 @@ class Character(Entity):
         #if self.__health <= 0: dead
         return True
 
+    def attack(self, victim):
+
+        victim.damage(5) # TODO: weapons
+
     def get_name(self):
 
         return self.__name
